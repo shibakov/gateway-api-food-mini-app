@@ -13,6 +13,12 @@ from .routers import day, meals, products, settings as settings_router, stats
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_CORS_ORIGINS = [
+    "https://my-miniapp-production.up.railway.app",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
 
 def create_app() -> FastAPI:
     settings = get_settings()
@@ -31,14 +37,26 @@ def create_app() -> FastAPI:
 
     app.state.settings = settings
 
+    cors_origins = settings.parsed_cors_origins or DEFAULT_CORS_ORIGINS
+
     if settings.parsed_cors_origins:
+        logger.info("Enabling CORS for origins from settings: %s", cors_origins)
+    else:
+        logger.warning(
+            "CORS_ORIGINS env var is empty; falling back to default origins: %s",
+            cors_origins,
+        )
+
+    if cors_origins:
         app.add_middleware(
             CORSMiddleware,
-            allow_origins=settings.parsed_cors_origins,
+            allow_origins=cors_origins,
             allow_methods=["*"],
             allow_headers=["*"],
-            allow_credentials=False,
+            allow_credentials=True,
         )
+    else:
+        logger.error("CORS middleware disabled: no origins configured")
 
     @app.exception_handler(GatewayError)
     async def gateway_error_handler(_: Request, exc: GatewayError) -> JSONResponse:  # type: ignore[override]
