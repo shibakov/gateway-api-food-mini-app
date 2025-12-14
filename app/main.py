@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from .config import get_settings
 from .db import database
 from .errors import GatewayError, InternalError
-from .routers import day, meals, products, settings, stats
+from .routers import day, meals, products, settings as settings_router, stats
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,7 @@ def create_app() -> FastAPI:
     app.include_router(day.router, prefix="/v1")
     app.include_router(meals.router, prefix="/v1")
     app.include_router(products.router, prefix="/v1")
-    app.include_router(settings.router, prefix="/v1")
+    app.include_router(settings_router.router, prefix="/v1")
     app.include_router(stats.router, prefix="/v1")
 
     return app
