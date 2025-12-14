@@ -45,13 +45,15 @@ pytest
 2. **Переменные окружения**
    - `DATABASE_URL` (Railway inject).
    - `ENV` / `APP_ENV` (например, `production`).
-   - `PORT` (Railway inject) — `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+   - `PORT` (Railway inject).
    - `LOG_LEVEL` (по умолчанию `INFO`).
    - `CORS_ORIGINS` (добавьте список origin-ов, разделённых запятыми).
    - `ENABLE_DOCS=false` чтобы отключать Swagger/Redoc в prod.
    - Pool/timeouts: `DB_POOL_MIN_SIZE`, `DB_POOL_MAX_SIZE`, `DB_POOL_TIMEOUT`, `DB_COMMAND_TIMEOUT`.
 3. **Запуск**
-   - Если используете Nixpacks: Railway autodetect Python, укажите Start Command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+   - Railway использует Railpack (Nixpacks):
+     - Создайте файл `.python-version` со значением `3.11.9`, чтобы Railpack не поднимал Python 3.13, несовместимый с `asyncpg 0.29`.`.
+     - Укажите Start Command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
    - Если Docker: убедитесь, что образ устанавливает зависимости и запускает Uvicorn на `$PORT`.
 4. **Хелсчек**
    - `GET /healthz` (без DB) → `{ok: true}`.
