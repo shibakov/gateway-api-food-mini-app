@@ -19,10 +19,12 @@ WHERE user_id = $1 AND meal_id = $2
 """
 
 GET_MEAL_ITEMS_QUERY = """
-SELECT item_id, name, grams, calories, protein, fat, carbs, added_via
-FROM foodtracker_app.v_meal_items_computed
-WHERE user_id = $1 AND meal_id = $2
-ORDER BY created_at
+SELECT v.item_id, v.name, v.grams, v.calories, v.protein, v.fat, v.carbs, v.added_via
+FROM foodtracker_app.v_meal_items_computed AS v
+JOIN foodtracker_app.meals AS m ON m.meal_id = v.meal_id
+JOIN foodtracker_app.meal_items AS mi ON mi.item_id = v.item_id
+WHERE m.user_id = $1 AND v.meal_id = $2
+ORDER BY mi.created_at
 """
 
 DELETE_MEAL_QUERY = """
@@ -38,9 +40,10 @@ RETURNING item_id
 """
 
 GET_ITEM_QUERY = """
-SELECT item_id, name, grams, calories, protein, fat, carbs, added_via
-FROM foodtracker_app.v_meal_items_computed
-WHERE user_id = $1 AND item_id = $2
+SELECT v.item_id, v.name, v.grams, v.calories, v.protein, v.fat, v.carbs, v.added_via
+FROM foodtracker_app.v_meal_items_computed AS v
+JOIN foodtracker_app.meals AS m ON m.meal_id = v.meal_id
+WHERE m.user_id = $1 AND v.item_id = $2
 """
 
 UPDATE_ITEM_QUERY = """

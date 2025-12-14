@@ -6,9 +6,9 @@ import asyncpg
 
 
 DAY_TOTAL_QUERY = """
-SELECT date, calories, protein, fat, carbs
+SELECT day_date, calories, protein, fat, carbs
 FROM foodtracker_app.v_day_totals
-WHERE user_id = $1 AND date = $2
+WHERE user_id = $1 AND day_date = $2
 """
 
 MEAL_TOTALS_QUERY = """

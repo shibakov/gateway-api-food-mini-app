@@ -5,10 +5,10 @@ from datetime import date
 import asyncpg
 
 STATS_QUERY = """
-SELECT date, calories, protein, fat, carbs
+SELECT day_date, calories, protein, fat, carbs
 FROM foodtracker_app.v_day_totals
-WHERE user_id = $1 AND date BETWEEN $2 AND $3
-ORDER BY date
+WHERE user_id = $1 AND day_date BETWEEN $2 AND $3
+ORDER BY day_date
 """
 
 
