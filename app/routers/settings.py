@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 
 from ..dependencies import get_db_connection, get_user_id
-from ..errors import NotFoundError
+from ..errors import InternalError, NotFoundError
 
 from ..repositories import settings as settings_repo
 from ..schemas.common import Settings
@@ -26,16 +26,29 @@ async def update_settings(
     user_id: str = Depends(get_user_id),
 ) -> dict:  # type: ignore[name-defined]
     # Pydantic validators already enforce step rules
-    updated = await settings_repo.update_settings(
-        conn,
-        user_id,
-        request.calorie_target,
-        request.calorie_tolerance,
-        request.macro_mode,
-        request.protein_target,
-        request.fat_target,
-        request.carbs_target,
-    )
-    if not updated:
-        raise NotFoundError("Settings not found")
+    try:
+        updated = await settings_repo.update_settings(
+            conn,
+            user_id,
+            request.calorie_target,
+            request.calorie_tolerance,
+            request.macro_mode,
+            request.protein_target,
+            request.fat_target,
+            request.carbs_target,
+        )
+        if not updated:
+            raise NotFoundError("Settings not found")
+        return {"status": "ok"}
+    except NotFoundError:
+        # Bubble up domain-specific not-found error for unified handling
+        raise
+    except Exception:
+        # Ensure no unhandled exceptions leak from this handler
+        raise InternalError()
+
+
+@router.options("", include_in_schema=False)
+async def options_settings() -> dict:
+    # Explicit OPTIONS handler to ensure CORS preflight for /v1/settings always returns 200
     return {"status": "ok"}

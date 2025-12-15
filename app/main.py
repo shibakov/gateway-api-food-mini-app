@@ -51,10 +51,10 @@ def create_app() -> FastAPI:
         app.add_middleware(
             CORSMiddleware,
             allow_origins=cors_origins,
-            # Разрешаем только необходимые методы
-            allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            # Разрешаем только необходимые заголовки
-            allow_headers=["Content-Type", "Authorization"],
+            # Allow all HTTP methods so that CORS preflight for any verb (e.g. PATCH) succeeds
+            allow_methods=["*"],
+            # Allow all headers so that browsers can send any custom headers in CORS requests
+            allow_headers=["*"],
             allow_credentials=True,
         )
     else:
