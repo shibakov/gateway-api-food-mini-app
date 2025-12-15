@@ -39,7 +39,7 @@ async def get_stats(
     records = await stats_repo.fetch_stats(conn, user_id, start_date, end_date)
     items = [
         StatsDay(
-            date=record["date"],
+            date=(record.get("date") or record.get("day_date")),
             calories=record["calories"],
             protein=record["protein"],
             fat=record["fat"],
