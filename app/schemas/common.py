@@ -16,9 +16,9 @@ class MealType(str, Enum):
 
 
 class InsightSeverity(str, Enum):
-    info = "info"
+    positive = "positive"
+    neutral = "neutral"
     warning = "warning"
-    danger = "danger"
 
 
 class Insight(BaseModel):

@@ -47,16 +47,24 @@ WHERE m.user_id = $1 AND v.item_id = $2
 """
 
 UPDATE_ITEM_QUERY = """
-UPDATE foodtracker_app.meal_items
+UPDATE foodtracker_app.meal_items AS mi
 SET grams = $1
-WHERE user_id = $2 AND meal_id = $3 AND item_id = $4
-RETURNING item_id
+FROM foodtracker_app.meals AS m
+WHERE mi.meal_id = m.meal_id
+  AND m.user_id = $2
+  AND mi.meal_id = $3
+  AND mi.item_id = $4
+RETURNING mi.item_id
 """
 
 DELETE_ITEM_QUERY = """
-DELETE FROM foodtracker_app.meal_items
-WHERE user_id = $1 AND meal_id = $2 AND item_id = $3
-RETURNING item_id
+DELETE FROM foodtracker_app.meal_items AS mi
+USING foodtracker_app.meals AS m
+WHERE mi.meal_id = m.meal_id
+  AND m.user_id = $1
+  AND mi.meal_id = $2
+  AND mi.item_id = $3
+RETURNING mi.item_id
 """
 
 
