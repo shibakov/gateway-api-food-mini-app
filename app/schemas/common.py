@@ -49,9 +49,9 @@ class MealItem(BaseModel):
     name: str
     grams: int
     calories: int
-    protein: int
-    fat: int
-    carbs: int
+    protein: float
+    fat: float
+    carbs: float
     added_via: str | None = None
 
 

@@ -61,13 +61,23 @@ def create_app() -> FastAPI:
         logger.error("CORS middleware disabled: no origins configured")
 
     @app.exception_handler(GatewayError)
-    async def gateway_error_handler(_: Request, exc: GatewayError) -> JSONResponse:  # type: ignore[override]
+    async def gateway_error_handler(request: Request, exc: GatewayError) -> JSONResponse:  # type: ignore[override]
+        # Логируем осознанные бизнес-ошибки с кодом и сообщением
+        logger.warning("Gateway error [%s] at %s: %s", exc.code, request.url.path, exc.message)
         return JSONResponse(status_code=exc.status_code, content=exc.detail)
 
     @app.exception_handler(Exception)
-    async def unhandled_exception_handler(_: Request, exc: Exception) -> JSONResponse:  # type: ignore[override]
-        logger.exception("Unhandled error: %s", exc)
-        internal = InternalError()
+    async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:  # type: ignore[override]
+        # Логируем полный стектрейс на сервере
+        logger.exception("Unhandled error at %s: %s", request.url.path, exc)
+
+        # В проде показываем общее сообщение, в dev/stage — класс и текст ошибки,
+        # чтобы в браузере было понятно, что именно пошло не так.
+        if settings.is_production():
+            internal = InternalError()
+        else:
+            internal = InternalError(message=f"{exc.__class__.__name__}: {exc}")
+
         return JSONResponse(status_code=internal.status_code, content=internal.detail)
 
     @app.get("/healthz")

@@ -46,9 +46,9 @@ async def insert_nutrition_event(
     conn: asyncpg.Connection,
     product_id: str,
     calories: int,
-    protein: int,
-    fat: int,
-    carbs: int,
+    protein: float,
+    fat: float,
+    carbs: float,
     source: str,
 ) -> str:
     record = await conn.fetchrow(INSERT_NUTRITION_EVENT_QUERY, product_id, calories, protein, fat, carbs, source)

@@ -26,7 +26,13 @@ async def get_meal(meal_id: str, conn=Depends(get_db_connection), user_id: str =
         raise NotFoundError("Meal not found")
 
     items = await meals_repo.get_meal_items(conn, user_id, meal_id)
-    return {"meal": dict(meal), "items": [MealItem(**dict(item)) for item in items]}
+    return {
+        "meal": dict(meal),
+        "items": [
+            MealItem(**{**dict(item), "item_id": str(item["item_id"])})
+            for item in items
+        ],
+    }
 
 
 @router.delete("/{meal_id}")
@@ -48,7 +54,7 @@ async def create_meal_item(
     item = await meals_repo.get_meal_item(conn, user_id, item_id)
     if not item:
         raise NotFoundError("Meal item not found after creation")
-    return MealItem(**dict(item))
+    return MealItem(**{**dict(item), "item_id": str(item["item_id"])})
 
 
 @router.patch("/{meal_id}/items/{item_id}")
@@ -65,7 +71,7 @@ async def update_meal_item(
     item = await meals_repo.get_meal_item(conn, user_id, item_id)
     if not item:
         raise NotFoundError("Meal item not found after update")
-    return MealItem(**dict(item))
+    return MealItem(**{**dict(item), "item_id": str(item["item_id"])})
 
 
 @router.delete("/{meal_id}/items/{item_id}")

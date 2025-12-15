@@ -30,7 +30,12 @@ async def get_day(date: str, conn=Depends(get_db_connection), user_id: str = Dep
     summary_totals.status = compute_status(summary_totals.calories, settings)
 
     meal_records = await day_repo.fetch_meal_totals(conn, user_id, target_date)
-    meals = [MealSummary(**dict(record)) for record in meal_records]
+    meals: list[MealSummary] = []
+    for record in meal_records:
+        data = dict(record)
+        if "meal_id" in data:
+            data["meal_id"] = str(data["meal_id"])
+        meals.append(MealSummary(**data))
 
     insight_record = await day_repo.fetch_insight(conn, user_id, target_date)
     insight = Insight(**dict(insight_record)) if insight_record else None
