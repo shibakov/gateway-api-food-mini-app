@@ -28,9 +28,9 @@ class Insight(BaseModel):
 
 class NutritionTotals(BaseModel):
     calories: int
-    protein: int
-    fat: int
-    carbs: int
+    protein: float
+    fat: float
+    carbs: float
 
 
 class Summary(NutritionTotals):
@@ -65,9 +65,9 @@ class DayResponse(BaseModel):
 class StatsDay(BaseModel):
     date: date
     calories: int
-    protein: int
-    fat: int
-    carbs: int
+    protein: float
+    fat: float
+    carbs: float
     status: Literal["under", "ok", "over"]
 
 
